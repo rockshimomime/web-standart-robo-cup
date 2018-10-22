@@ -18,6 +18,7 @@ h6,
     padding-top: 90px;
     margin-bottom: 75px;
     padding-bottom: 0;
+    background-position: center;
 }
 
 .animated-header .animated-header__title {
@@ -311,4 +312,20 @@ footer ul li a:hover {
 
 .icon-svg {
     fill: #fdbd53;
+}
+
+.paragraph {
+    font-size: 16px;
+    color: #000;
+    line-height: 1.65em;
+    margin: 0 0 12px;
+    word-break: break-word;
+    text-align: justify;
+    margin-left: 12%;
+    margin-left: 2em;
+}
+
+h3 {
+    padding-top: 3em;
+    margin-left: 1em;
 }
