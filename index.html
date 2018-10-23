@@ -35,7 +35,7 @@
                     <a href="sobre.html">Sobre</a>
                 </li>
                 <li href="#">
-                    <a href="">Galeria</a>
+                    <a href="galeria.html">Galeria</a>
                 </li>
             </ul>
         </div>
@@ -46,7 +46,11 @@
         <div class="container">
             <p class="animated-header__title">Olá, tudo bem?</p>
             <h1 class="animated-header__subtitle">Eu vou destruir vocês.</h1>
-
+            <?php
+							date_default_timezone_set('America/Sao_Paulo');
+							$date = date('d-m-Y H:i');
+							echo $date;
+						?>
         </div>
 
 

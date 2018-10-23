@@ -330,5 +330,7 @@ h3 {
     margin-left: 1em;
 }
 
-/* game */
-
+img-robocuo {
+    max-width: 300px;
+    max-height: 300px;
+}
