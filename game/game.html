@@ -55,7 +55,7 @@
   <!-- Menu Principal -->
   <nav class="header-nav">
     <div class="container">
-      <a href="index.html" class="header-nav__logo">
+      <a href="../index.html" class="header-nav__logo">
         <img src="../fonts/small-robot-with-arms-and-legs.svg" alt="Logo Robo">
       </a>
       <button class="header-nav__hamburgger" type="button">
@@ -68,13 +68,13 @@
       </button>
       <ul class="header-nav__menu">
         <li href="#">
-          <a href="">Torneio</a>
+          <a href="">Game</a>
+        </li>
+        <li href="../sobre.html">
+          <a href="../sobre.html">Sobre</a>
         </li>
         <li href="#">
-          <a href="">Sobre</a>
-        </li>
-        <li href="#">
-          <a href="">Galeria</a>
+          <a href="../galeria.html">Galeria</a>
         </li>
       </ul>
     </div>
@@ -95,339 +95,348 @@
   <div class="container container__main">
     <div class="row">
       <div class="col-xs-12">
-        <h2>Plano de destruição em massa.</h2>
+        <h2>Destroyer all enemies.</h2>
       </div>
-      <h3>Introdução</h3>
+
       <div>
         <center>
-        <script>
-          window.fbAsyncInit = function () {
-            FB.init({
-              // Esta é sua ID
-              appId: '256351554550031',
-              xfbml: true,
-              version: 'v2.0'
-            });
-          };
-
-          (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s); js.id = id;
-            js.src = "http://connect.facebook.net/pt_BR/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-          }(document, 'script', 'facebook-jssdk'));
-        </script>
-
-        <canvas id="canvas_animacao" width="500" height="500"></canvas>
-
-        <a id="link_jogar" href="javascript: iniciarJogo()">Jogar</a>
-
-        <div id="botao_compartilhar" class="fb-share-button" data-href="http://gamecursos.com.br/jogo-nave" data-type="button_count"></div>
-
-        <a id="postar_pontuacao" href="javascript: postarPontuacao()">Compartilhar Pontua&ccedil;&atilde;o</a>
-
-        <p onclick="iniciarJogo">
-          Setas: movimento <br>
-          Espa&ccedil;o: tiro <br>
-          Enter: pausa
-          a
-
-        </p>
-
-        <script>
-          // Canvas e Context
-          var canvas = document.getElementById('canvas_animacao');
-          var context = canvas.getContext('2d');
-
-          // Variáveis principais
-          var imagens, animacao, teclado, colisor, nave, criadorInimigos;
-          var totalImagens = 0, carregadas = 0;
-          var musicaAcao;
-
-          // Começa carregando as imagens e músicas
-          carregarImagens();
-          carregarMusicas();
-
-          function carregarImagens() {
-            // Objeto contendo os nomes das imagens
-            imagens = {
-              espaco: 'fundo-espaco.png',
-              estrelas: 'fundo-estrelas.png',
-              nuvens: 'fundo-nuvens.png',
-              nave: 'nave-spritesheet.png',
-              ovni: 'ovni.png',
-              explosao: 'explosao.png'
+          <script>
+            window.fbAsyncInit = function () {
+              FB.init({
+                // Esta é sua ID
+                appId: '256351554550031',
+                xfbml: true,
+                version: 'v2.0'
+              });
             };
 
-            // Carregar todas
-            for (var i in imagens) {
-              var img = new Image();
-              img.src = 'img/' + imagens[i];
-              img.onload = carregando;
-              totalImagens++;
+            (function (d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) { return; }
+              js = d.createElement(s); js.id = id;
+              js.src = "http://connect.facebook.net/pt_BR/sdk.js";
+              fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+          </script>
 
-              // Substituir o nome pela imagem
-              imagens[i] = img;
-            }
-          }
+          <canvas id="canvas_animacao" width="500" height="500"></canvas>
 
-          function carregando() {
-            context.save();
+          <a id="link_jogar" href="javascript: iniciarJogo()">Jogar</a>
 
-            // Fundo 
-            context.drawImage(imagens.espaco, 0, 0, canvas.width,
-              canvas.height);
+          <div id="botao_compartilhar" class="fb-share-button" data-href="http://gamecursos.com.br/jogo-nave" data-type="button_count"></div>
 
-            // Texto "Carregando"
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.font = '50px sans-serif';
-            context.fillText("Carregando...", 100, 200);
-            context.strokeText("Carregando...", 100, 200);
+          <a id="postar_pontuacao" href="javascript: postarPontuacao()">Compartilhar Pontua&ccedil;&atilde;o</a>
 
-            // Barra de loading
-            carregadas++;
-            var tamanhoTotal = 300;
-            var tamanho = carregadas / totalImagens * tamanhoTotal;
-            context.fillStyle = 'yellow';
-            context.fillRect(100, 250, tamanho, 50);
+          <p onclick="iniciarJogo">
+            Setas: movimento <br>
+            &larr; &uarr; &rarr; &darr; <br>
+            Espa&ccedil;o: tiro <br>
+            Enter: pausa
+          </p>
 
-            context.restore();
+          <script>
+            // Canvas e Context
+            var canvas = document.getElementById('canvas_animacao');
+            var context = canvas.getContext('2d');
 
-            if (carregadas == totalImagens) {
-              iniciarObjetos();
-              mostrarLinkJogar();
-            }
-          }
+            // Variáveis principais
+            var imagens, animacao, teclado, colisor, nave, criadorInimigos;
+            var totalImagens = 0, carregadas = 0;
+            var musicaAcao;
 
-          function iniciarObjetos() {
-            // Objetos principais
-            animacao = new Animacao(context);
-            teclado = new Teclado(document);
-            colisor = new Colisor();
-            espaco = new Fundo(context, imagens.espaco);
-            estrelas = new Fundo(context, imagens.estrelas);
-            nuvens = new Fundo(context, imagens.nuvens);
-            nave = new Nave(context, teclado, imagens.nave,
-              imagens.explosao);
-            painel = new Painel(context, nave);
+            // Começa carregando as imagens e músicas
+            carregarImagens();
+            carregarMusicas();
 
-            // Ligações entre objetos
-            animacao.novoSprite(espaco);
-            animacao.novoSprite(estrelas);
-            animacao.novoSprite(nuvens);
-            animacao.novoSprite(painel);
-            animacao.novoSprite(nave);
+            function carregarImagens() {
+              // Objeto contendo os nomes das imagens
+              imagens = {
+                espaco: 'fundo-espaco.png',
+                estrelas: 'fundo-estrelas.png',
+                nuvens: 'fundo-nuvens.png',
+                nave: 'nave-spritesheet.png',
+                ovni: 'ovni.png',
+                explosao: 'explosao.png'
+              };
 
-            colisor.novoSprite(nave);
-            animacao.novoProcessamento(colisor);
+              // Carregar todas
+              for (var i in imagens) {
+                var img = new Image();
+                img.src = 'img/' + imagens[i];
+                img.onload = carregando;
+                totalImagens++;
 
-            configuracoesIniciais();
-          }
-
-          function configuracoesIniciais() {
-            // Fundos
-            espaco.velocidade = 60;
-            estrelas.velocidade = 150;
-            nuvens.velocidade = 500;
-
-            // Nave
-            nave.posicionar();
-            nave.velocidade = 200;
-
-            // Inimigos
-            criacaoInimigos();
-
-            // Game Over
-            nave.acabaramVidas = function () {
-              animacao.desligar();
-              gameOver();
-            }
-
-            // Pontuação
-            colisor.aoColidir = function (o1, o2) {
-              // Tiro com Ovni
-              if ((o1 instanceof Tiro && o2 instanceof Ovni) ||
-                (o1 instanceof Ovni && o2 instanceof Tiro))
-                painel.pontuacao += 10;
-            }
-          }
-
-          function criacaoInimigos() {
-            criadorInimigos = {
-              ultimoOvni: new Date().getTime(),
-
-              processar: function () {
-                var agora = new Date().getTime();
-                var decorrido = agora - this.ultimoOvni;
-
-                if (decorrido > 1000) {
-                  novoOvni();
-                  this.ultimoOvni = agora;
-                }
+                // Substituir o nome pela imagem
+                imagens[i] = img;
               }
-            };
+            }
 
-            animacao.novoProcessamento(criadorInimigos);
-          }
-
-          function novoOvni() {
-            var imgOvni = imagens.ovni;
-            var ovni = new Ovni(context, imgOvni, imagens.explosao);
-
-            // Mínimo: 500; máximo: 1000
-            ovni.velocidade =
-              Math.floor(500 + Math.random() * (1000 - 500 + 1));
-
-            // Mínimo: 0; máximo: largura do canvas - largura do ovni   
-            ovni.x =
-              Math.floor(Math.random() *
-                (canvas.width - imgOvni.width + 1));
-
-            // Descontar a altura
-            ovni.y = -imgOvni.height;
-
-            animacao.novoSprite(ovni);
-            colisor.novoSprite(ovni);
-          }
-
-          function pausarJogo() {
-            if (animacao.ligado) {
-              animacao.desligar();
-              ativarTiro(false);
+            function carregando() {
               context.save();
+
+              // Fundo 
+              context.drawImage(imagens.espaco, 0, 0, canvas.width,
+                canvas.height);
+
+              // Texto "Carregando"
               context.fillStyle = 'white';
               context.strokeStyle = 'black';
               context.font = '50px sans-serif';
-              context.fillText("Pausado", 160, 200);
-              context.strokeText("Pausado", 160, 200);
+              context.fillText("Carregando...", 1020, 00);
+              context.strokeText("Carregando...", 100, 200);
+
+              // Barra de loading
+              carregadas++;
+              var tamanhoTotal = 300;
+              var tamanho = carregadas / totalImagens * tamanhoTotal;
+              context.fillStyle = 'yellow';
+              context.fillRect(100, 250, tamanho, 50);
+
               context.restore();
+
+              if (carregadas == totalImagens) {
+                iniciarObjetos();
+                mostrarLinkJogar();
+              }
             }
-            else {
+
+            function iniciarObjetos() {
+              // Objetos principais
+              animacao = new Animacao(context);
+              teclado = new Teclado(document);
+              colisor = new Colisor();
+              espaco = new Fundo(context, imagens.espaco);
+              estrelas = new Fundo(context, imagens.estrelas);
+              nuvens = new Fundo(context, imagens.nuvens);
+              nave = new Nave(context, teclado, imagens.nave,
+                imagens.explosao);
+              painel = new Painel(context, nave);
+
+              // Ligações entre objetos
+              animacao.novoSprite(espaco);
+              animacao.novoSprite(estrelas);
+              animacao.novoSprite(nuvens);
+              animacao.novoSprite(painel);
+              animacao.novoSprite(nave);
+
+              colisor.novoSprite(nave);
+              animacao.novoProcessamento(colisor);
+
+              configuracoesIniciais();
+            }
+
+            function configuracoesIniciais() {
+              // Fundos
+              espaco.velocidade = 60;
+              estrelas.velocidade = 150;
+              nuvens.velocidade = 500;
+
+              // Nave
+              nave.posicionar();
+              nave.velocidade = 200;
+
+              // Inimigos
+              criacaoInimigos();
+
+              // Game Over
+              nave.acabaramVidas = function () {
+                animacao.desligar();
+                gameOver();
+              }
+
+              // Pontuação
+              colisor.aoColidir = function (o1, o2) {
+                // Tiro com Ovni
+                if ((o1 instanceof Tiro && o2 instanceof Ovni) ||
+                  (o1 instanceof Ovni && o2 instanceof Tiro))
+                  painel.pontuacao += 10;
+              }
+            }
+
+            function criacaoInimigos() {
+              criadorInimigos = {
+                ultimoOvni: new Date().getTime(),
+
+                processar: function () {
+                  var agora = new Date().getTime();
+                  var decorrido = agora - this.ultimoOvni;
+
+                  if (decorrido > 1000) {
+                    novoOvni();
+                    this.ultimoOvni = agora;
+                  }
+                }
+              };
+
+              animacao.novoProcessamento(criadorInimigos);
+            }
+
+            function novoOvni() {
+              var imgOvni = imagens.ovni;
+              var ovni = new Ovni(context, imgOvni, imagens.explosao);
+
+              // Mínimo: 500; máximo: 1000
+              ovni.velocidade =
+                Math.floor(500 + Math.random() * (1000 - 500 + 1));
+
+              // Mínimo: 0; máximo: largura do canvas - largura do ovni   
+              ovni.x =
+                Math.floor(Math.random() *
+                  (canvas.width - imgOvni.width + 1));
+
+              // Descontar a altura
+              ovni.y = -imgOvni.height;
+
+              animacao.novoSprite(ovni);
+              colisor.novoSprite(ovni);
+            }
+
+            function pausarJogo() {
+              if (animacao.ligado) {
+                animacao.desligar();
+                ativarTiro(false);
+                context.save();
+                context.fillStyle = 'white';
+                context.strokeStyle = 'black';
+                context.font = '50px sans-serif';
+                context.fillText("Pausado", 160, 200);
+                context.strokeText("Pausado", 160, 200);
+                context.restore();
+              }
+              else {
+                criadorInimigos.ultimoOvni = new Date().getTime();
+                animacao.ligar();
+                ativarTiro(true);
+              }
+            }
+
+            function ativarTiro(ativar) {
+              if (ativar) {
+                teclado.disparou(ESPACO, function () {
+                  nave.atirar();
+                });
+              }
+              else
+                teclado.disparou(ESPACO, null);
+            }
+
+            function carregarMusicas() {
+              musicaAcao = new Audio();
+              musicaAcao.src = 'snd/musica-acao.mp3';
+              musicaAcao.load();
+              musicaAcao.volume = 0.8;
+              musicaAcao.loop = true;
+            }
+
+            function mostrarLinkJogar() {
+              document.getElementById('link_jogar').style.display =
+                'block';
+            }
+
+            function iniciarJogo() {
               criadorInimigos.ultimoOvni = new Date().getTime();
-              animacao.ligar();
+
+              // Tiro
               ativarTiro(true);
+
+              // Pausa
+              teclado.disparou(ENTER, pausarJogo);
+
+              document.getElementById('link_jogar').style.display =
+                'none';
+              document.getElementById('postar_pontuacao').style.display =
+                'none';
+
+              painel.pontuacao = 0;
+              musicaAcao.play();
+              animacao.ligar();
             }
-          }
 
-          function ativarTiro(ativar) {
-            if (ativar) {
-              teclado.disparou(ESPACO, function () {
-                nave.atirar();
-              });
+            function gameOver() {
+              // Tiro
+              ativarTiro(false);
+
+              // Pausa
+              teclado.disparou(ENTER, null);
+
+              // Parar a música e rebobinar
+              musicaAcao.pause();
+              musicaAcao.currentTime = 0.0;
+
+              // Fundo
+              context.drawImage(imagens.espaco, 0, 0, canvas.width,
+                canvas.height);
+
+              // Texto "Game Over"
+              context.save();
+              context.fillStyle = 'white';
+              context.strokeStyle = 'black';
+              context.font = '70px sans-serif';
+              context.fillText("GAME OVER", 40, 200);
+              context.strokeText("GAME OVER", 40, 200);
+              context.restore();
+
+              // Volta o link "Jogar"
+              mostrarLinkJogar();
+
+              // Restaurar as condições da nave
+              nave.vidasExtras = 3;
+              nave.posicionar();
+              animacao.novoSprite(nave);
+              colisor.novoSprite(nave);
+
+              // Tirar todos os inimigos da tela
+              removerInimigos();
+
+              // Link de postar pontuação
+              document.getElementById('postar_pontuacao')
+                .style.display = 'block';
             }
-            else
-              teclado.disparou(ESPACO, null);
-          }
 
-          function carregarMusicas() {
-            musicaAcao = new Audio();
-            musicaAcao.src = 'snd/musica-acao.mp3';
-            musicaAcao.load();
-            musicaAcao.volume = 0.8;
-            musicaAcao.loop = true;
-          }
-
-          function mostrarLinkJogar() {
-            document.getElementById('link_jogar').style.display =
-              'block';
-          }
-
-          function iniciarJogo() {
-            criadorInimigos.ultimoOvni = new Date().getTime();
-
-            // Tiro
-            ativarTiro(true);
-
-            // Pausa
-            teclado.disparou(ENTER, pausarJogo);
-
-            document.getElementById('link_jogar').style.display =
-              'none';
-            document.getElementById('postar_pontuacao').style.display =
-              'none';
-
-            painel.pontuacao = 0;
-            musicaAcao.play();
-            animacao.ligar();
-          }
-
-          function gameOver() {
-            // Tiro
-            ativarTiro(false);
-
-            // Pausa
-            teclado.disparou(ENTER, null);
-
-            // Parar a música e rebobinar
-            musicaAcao.pause();
-            musicaAcao.currentTime = 0.0;
-
-            // Fundo
-            context.drawImage(imagens.espaco, 0, 0, canvas.width,
-              canvas.height);
-
-            // Texto "Game Over"
-            context.save();
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.font = '70px sans-serif';
-            context.fillText("GAME OVER", 40, 200);
-            context.strokeText("GAME OVER", 40, 200);
-            context.restore();
-
-            // Volta o link "Jogar"
-            mostrarLinkJogar();
-
-            // Restaurar as condições da nave
-            nave.vidasExtras = 3;
-            nave.posicionar();
-            animacao.novoSprite(nave);
-            colisor.novoSprite(nave);
-
-            // Tirar todos os inimigos da tela
-            removerInimigos();
-
-            // Link de postar pontuação
-            document.getElementById('postar_pontuacao')
-              .style.display = 'block';
-          }
-
-          function removerInimigos() {
-            for (var i in animacao.sprites) {
-              if (animacao.sprites[i] instanceof Ovni)
-                animacao.excluirSprite(animacao.sprites[i]);
+            function removerInimigos() {
+              for (var i in animacao.sprites) {
+                if (animacao.sprites[i] instanceof Ovni)
+                  animacao.excluirSprite(animacao.sprites[i]);
+              }
             }
-          }
 
-          function postarPontuacao() {
-            // API de feed do Facebook
-            FB.ui(
-              {
-                method: 'feed',
-                name: 'Jogo de Nave',
-                caption: 'Jogue e compartilhe com seus amigos!',
-                description: (
-                  'Minha pontuacao foi: ' + painel.pontuacao
-                ),
-                link: 'http://gamecursos.com.br/jogo-nave'
-              },
-              function (response) { }
-            );
-          }
-        </script>
+            function postarPontuacao() {
+              // API de feed do Facebook
+              FB.ui(
+                {
+                  method: 'feed',
+                  name: 'Jogo de Nave',
+                  caption: 'Jogue e compartilhe com seus amigos!',
+                  description: (
+                    'Minha pontuacao foi: ' + painel.pontuacao
+                  ),
+                  link: 'http://gamecursos.com.br/jogo-nave'
+                },
+                function (response) { }
+              );
+            }
+          </script>
       </div>
 
 
 
 
-      <p class="paragraph">Gerenciamento do Escopo
-        A delimitação do escopo será definida na “Declaração de Escopo”, que deve ser aprovada formalmente pelo grupo.
-        Havendo
-        alterações de escopo ao longo do projeto, deve-se realizar o grupo para uma nova avaliação e votação. Cada
-        avaliação
-        deverá gerar um novo documento com as mudanças.</p>
+      <p class="paragraph">
+        <p>
+          O jogo é inspirado em dois universos; A robotização oriunda da competição de robôs da FIAP e no universo de
+          RPG do
+          mundo pós apocalíptico  dominado por alienígenas.
+
+          <br>
+          <br>
+          Seu objetivo é destruir todos os inimigos espaciais, mas cuidado, você só pode sofrer três impactos ou todo o
+          futuro da
+          raça humana estará arruinado.
+
+        </p>
+        <b>Jogo proposto pela disciplina de Web Stardard - Game Development</b>
+
+      </p>
 
 
 
