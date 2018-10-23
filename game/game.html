@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="js">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Heiwajima Shizuo - Robo CUP</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel=" stylesheet" href="../css/bootstrap.min.css">
+
+</head>
+
+<body>
+  <style>
+    #link_jogar {
+      /* Inicia oculto */
+      display: none;
+  
+      /* Cores e fundo */
+      color: yellow;
+      background: url(img/botao-jogar.png);
+  
+      /* Fonte */
+      font-size: 20px;
+      font-family: sans-serif;
+  
+      /* Sem sublinhado e com sombra */
+      text-decoration: none;
+      text-shadow: 2px 2px 5px black;
+  
+      /* Posicionamento */
+      
+      left: 220px;
+      top: 330px;
+  
+      /* A imagem do botão é 72x72, descontamos os paddings */
+      width: 72px;
+      height: 71px;
+      padding: 23px 10px;
+    }
+  
+    #postar_pontuacao {
+      /* Ocultar o link */
+      display: none;
+  
+      /* Visual a gosto! */
+      color: yellow;
+      position: absolute;
+      left: 180px;
+      top: 410px;
+    }
+  </style>
+
+  <!-- Menu Principal -->
+  <nav class="header-nav">
+    <div class="container">
+      <a href="index.html" class="header-nav__logo">
+        <img src="../fonts/small-robot-with-arms-and-legs.svg" alt="Logo Robo">
+      </a>
+      <button class="header-nav__hamburgger" type="button">
+        <div class="header-nav__hamburggerParties">
+          <span class="sr-only">
+            Menu
+          </span>
+          <i class="fas fa-bars" aria-hidden="true"></i>
+        </div>
+      </button>
+      <ul class="header-nav__menu">
+        <li href="#">
+          <a href="">Torneio</a>
+        </li>
+        <li href="#">
+          <a href="">Sobre</a>
+        </li>
+        <li href="#">
+          <a href="">Galeria</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Banner principal -->
+  <div class="jumbotron animated-header">
+    <div class="container">
+
+
+    </div>
+
+
+
+  </div>
+
+  <!-- Últimos trabalhos realizados -->
+  <div class="container container__main">
+    <div class="row">
+      <div class="col-xs-12">
+        <h2>Plano de destruição em massa.</h2>
+      </div>
+      <h3>Introdução</h3>
+      <div>
+        <center>
+        <script>
+          window.fbAsyncInit = function () {
+            FB.init({
+              // Esta é sua ID
+              appId: '256351554550031',
+              xfbml: true,
+              version: 'v2.0'
+            });
+          };
+
+          (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "http://connect.facebook.net/pt_BR/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+          }(document, 'script', 'facebook-jssdk'));
+        </script>
+
+        <canvas id="canvas_animacao" width="500" height="500"></canvas>
+
+        <a id="link_jogar" href="javascript: iniciarJogo()">Jogar</a>
+
+        <div id="botao_compartilhar" class="fb-share-button" data-href="http://gamecursos.com.br/jogo-nave" data-type="button_count"></div>
+
+        <a id="postar_pontuacao" href="javascript: postarPontuacao()">Compartilhar Pontua&ccedil;&atilde;o</a>
+
+        <p onclick="iniciarJogo">
+          Setas: movimento <br>
+          Espa&ccedil;o: tiro <br>
+          Enter: pausa
+          a
+
+        </p>
+
+        <script>
+          // Canvas e Context
+          var canvas = document.getElementById('canvas_animacao');
+          var context = canvas.getContext('2d');
+
+          // Variáveis principais
+          var imagens, animacao, teclado, colisor, nave, criadorInimigos;
+          var totalImagens = 0, carregadas = 0;
+          var musicaAcao;
+
+          // Começa carregando as imagens e músicas
+          carregarImagens();
+          carregarMusicas();
+
+          function carregarImagens() {
+            // Objeto contendo os nomes das imagens
+            imagens = {
+              espaco: 'fundo-espaco.png',
+              estrelas: 'fundo-estrelas.png',
+              nuvens: 'fundo-nuvens.png',
+              nave: 'nave-spritesheet.png',
+              ovni: 'ovni.png',
+              explosao: 'explosao.png'
+            };
+
+            // Carregar todas
+            for (var i in imagens) {
+              var img = new Image();
+              img.src = 'img/' + imagens[i];
+              img.onload = carregando;
+              totalImagens++;
+
+              // Substituir o nome pela imagem
+              imagens[i] = img;
+            }
+          }
+
+          function carregando() {
+            context.save();
+
+            // Fundo 
+            context.drawImage(imagens.espaco, 0, 0, canvas.width,
+              canvas.height);
+
+            // Texto "Carregando"
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.font = '50px sans-serif';
+            context.fillText("Carregando...", 100, 200);
+            context.strokeText("Carregando...", 100, 200);
+
+            // Barra de loading
+            carregadas++;
+            var tamanhoTotal = 300;
+            var tamanho = carregadas / totalImagens * tamanhoTotal;
+            context.fillStyle = 'yellow';
+            context.fillRect(100, 250, tamanho, 50);
+
+            context.restore();
+
+            if (carregadas == totalImagens) {
+              iniciarObjetos();
+              mostrarLinkJogar();
+            }
+          }
+
+          function iniciarObjetos() {
+            // Objetos principais
+            animacao = new Animacao(context);
+            teclado = new Teclado(document);
+            colisor = new Colisor();
+            espaco = new Fundo(context, imagens.espaco);
+            estrelas = new Fundo(context, imagens.estrelas);
+            nuvens = new Fundo(context, imagens.nuvens);
+            nave = new Nave(context, teclado, imagens.nave,
+              imagens.explosao);
+            painel = new Painel(context, nave);
+
+            // Ligações entre objetos
+            animacao.novoSprite(espaco);
+            animacao.novoSprite(estrelas);
+            animacao.novoSprite(nuvens);
+            animacao.novoSprite(painel);
+            animacao.novoSprite(nave);
+
+            colisor.novoSprite(nave);
+            animacao.novoProcessamento(colisor);
+
+            configuracoesIniciais();
+          }
+
+          function configuracoesIniciais() {
+            // Fundos
+            espaco.velocidade = 60;
+            estrelas.velocidade = 150;
+            nuvens.velocidade = 500;
+
+            // Nave
+            nave.posicionar();
+            nave.velocidade = 200;
+
+            // Inimigos
+            criacaoInimigos();
+
+            // Game Over
+            nave.acabaramVidas = function () {
+              animacao.desligar();
+              gameOver();
+            }
+
+            // Pontuação
+            colisor.aoColidir = function (o1, o2) {
+              // Tiro com Ovni
+              if ((o1 instanceof Tiro && o2 instanceof Ovni) ||
+                (o1 instanceof Ovni && o2 instanceof Tiro))
+                painel.pontuacao += 10;
+            }
+          }
+
+          function criacaoInimigos() {
+            criadorInimigos = {
+              ultimoOvni: new Date().getTime(),
+
+              processar: function () {
+                var agora = new Date().getTime();
+                var decorrido = agora - this.ultimoOvni;
+
+                if (decorrido > 1000) {
+                  novoOvni();
+                  this.ultimoOvni = agora;
+                }
+              }
+            };
+
+            animacao.novoProcessamento(criadorInimigos);
+          }
+
+          function novoOvni() {
+            var imgOvni = imagens.ovni;
+            var ovni = new Ovni(context, imgOvni, imagens.explosao);
+
+            // Mínimo: 500; máximo: 1000
+            ovni.velocidade =
+              Math.floor(500 + Math.random() * (1000 - 500 + 1));
+
+            // Mínimo: 0; máximo: largura do canvas - largura do ovni   
+            ovni.x =
+              Math.floor(Math.random() *
+                (canvas.width - imgOvni.width + 1));
+
+            // Descontar a altura
+            ovni.y = -imgOvni.height;
+
+            animacao.novoSprite(ovni);
+            colisor.novoSprite(ovni);
+          }
+
+          function pausarJogo() {
+            if (animacao.ligado) {
+              animacao.desligar();
+              ativarTiro(false);
+              context.save();
+              context.fillStyle = 'white';
+              context.strokeStyle = 'black';
+              context.font = '50px sans-serif';
+              context.fillText("Pausado", 160, 200);
+              context.strokeText("Pausado", 160, 200);
+              context.restore();
+            }
+            else {
+              criadorInimigos.ultimoOvni = new Date().getTime();
+              animacao.ligar();
+              ativarTiro(true);
+            }
+          }
+
+          function ativarTiro(ativar) {
+            if (ativar) {
+              teclado.disparou(ESPACO, function () {
+                nave.atirar();
+              });
+            }
+            else
+              teclado.disparou(ESPACO, null);
+          }
+
+          function carregarMusicas() {
+            musicaAcao = new Audio();
+            musicaAcao.src = 'snd/musica-acao.mp3';
+            musicaAcao.load();
+            musicaAcao.volume = 0.8;
+            musicaAcao.loop = true;
+          }
+
+          function mostrarLinkJogar() {
+            document.getElementById('link_jogar').style.display =
+              'block';
+          }
+
+          function iniciarJogo() {
+            criadorInimigos.ultimoOvni = new Date().getTime();
+
+            // Tiro
+            ativarTiro(true);
+
+            // Pausa
+            teclado.disparou(ENTER, pausarJogo);
+
+            document.getElementById('link_jogar').style.display =
+              'none';
+            document.getElementById('postar_pontuacao').style.display =
+              'none';
+
+            painel.pontuacao = 0;
+            musicaAcao.play();
+            animacao.ligar();
+          }
+
+          function gameOver() {
+            // Tiro
+            ativarTiro(false);
+
+            // Pausa
+            teclado.disparou(ENTER, null);
+
+            // Parar a música e rebobinar
+            musicaAcao.pause();
+            musicaAcao.currentTime = 0.0;
+
+            // Fundo
+            context.drawImage(imagens.espaco, 0, 0, canvas.width,
+              canvas.height);
+
+            // Texto "Game Over"
+            context.save();
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.font = '70px sans-serif';
+            context.fillText("GAME OVER", 40, 200);
+            context.strokeText("GAME OVER", 40, 200);
+            context.restore();
+
+            // Volta o link "Jogar"
+            mostrarLinkJogar();
+
+            // Restaurar as condições da nave
+            nave.vidasExtras = 3;
+            nave.posicionar();
+            animacao.novoSprite(nave);
+            colisor.novoSprite(nave);
+
+            // Tirar todos os inimigos da tela
+            removerInimigos();
+
+            // Link de postar pontuação
+            document.getElementById('postar_pontuacao')
+              .style.display = 'block';
+          }
+
+          function removerInimigos() {
+            for (var i in animacao.sprites) {
+              if (animacao.sprites[i] instanceof Ovni)
+                animacao.excluirSprite(animacao.sprites[i]);
+            }
+          }
+
+          function postarPontuacao() {
+            // API de feed do Facebook
+            FB.ui(
+              {
+                method: 'feed',
+                name: 'Jogo de Nave',
+                caption: 'Jogue e compartilhe com seus amigos!',
+                description: (
+                  'Minha pontuacao foi: ' + painel.pontuacao
+                ),
+                link: 'http://gamecursos.com.br/jogo-nave'
+              },
+              function (response) { }
+            );
+          }
+        </script>
+      </div>
+
+
+
+
+      <p class="paragraph">Gerenciamento do Escopo
+        A delimitação do escopo será definida na “Declaração de Escopo”, que deve ser aprovada formalmente pelo grupo.
+        Havendo
+        alterações de escopo ao longo do projeto, deve-se realizar o grupo para uma nova avaliação e votação. Cada
+        avaliação
+        deverá gerar um novo documento com as mudanças.</p>
+
+
+
+
+
+    </div>
+    <!-- /row -->
+  </div>
+  <!-- /Container -->
+
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="text-muted text-right">Social: </p>
+      <ul class="list-inline pull-right">
+        <li>
+          <a href="https://pt-br.facebook.com/fiap/" target="_blank">
+            <svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="28" viewBox="0 0 16 28">
+              <title>Facebook</title>
+              <path d="M14.984 0.187v4.125h-2.453c-1.922 0-2.281 0.922-2.281 2.25v2.953h4.578l-0.609 4.625h-3.969v11.859h-4.781v-11.859h-3.984v-4.625h3.984v-3.406c0-3.953 2.422-6.109 5.953-6.109 1.687 0 3.141 0.125 3.563 0.187z"></path>
+            </svg>
+
+          </a>
+        </li>
+        <li>
+          <a href="https://www.instagram.com/fiapoficial/?hl=pt-br" target="_blank">
+            <svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+              <title>Instagram</title>
+              <path d="M16 2.881c4.275 0 4.781 0.019 6.462 0.094 1.563 0.069 2.406 0.331 2.969 0.55 0.744 0.288 1.281 0.638 1.837 1.194 0.563 0.563 0.906 1.094 1.2 1.838 0.219 0.563 0.481 1.412 0.55 2.969 0.075 1.688 0.094 2.194 0.094 6.463s-0.019 4.781-0.094 6.463c-0.069 1.563-0.331 2.406-0.55 2.969-0.288 0.744-0.637 1.281-1.194 1.837-0.563 0.563-1.094 0.906-1.837 1.2-0.563 0.219-1.413 0.481-2.969 0.55-1.688 0.075-2.194 0.094-6.463 0.094s-4.781-0.019-6.463-0.094c-1.563-0.069-2.406-0.331-2.969-0.55-0.744-0.288-1.281-0.637-1.838-1.194-0.563-0.563-0.906-1.094-1.2-1.837-0.219-0.563-0.481-1.413-0.55-2.969-0.075-1.688-0.094-2.194-0.094-6.463s0.019-4.781 0.094-6.463c0.069-1.563 0.331-2.406 0.55-2.969 0.288-0.744 0.638-1.281 1.194-1.838 0.563-0.563 1.094-0.906 1.838-1.2 0.563-0.219 1.412-0.481 2.969-0.55 1.681-0.075 2.188-0.094 6.463-0.094zM16 0c-4.344 0-4.887 0.019-6.594 0.094-1.7 0.075-2.869 0.35-3.881 0.744-1.056 0.412-1.95 0.956-2.837 1.85-0.894 0.888-1.438 1.781-1.85 2.831-0.394 1.019-0.669 2.181-0.744 3.881-0.075 1.713-0.094 2.256-0.094 6.6s0.019 4.887 0.094 6.594c0.075 1.7 0.35 2.869 0.744 3.881 0.413 1.056 0.956 1.95 1.85 2.837 0.887 0.887 1.781 1.438 2.831 1.844 1.019 0.394 2.181 0.669 3.881 0.744 1.706 0.075 2.25 0.094 6.594 0.094s4.888-0.019 6.594-0.094c1.7-0.075 2.869-0.35 3.881-0.744 1.050-0.406 1.944-0.956 2.831-1.844s1.438-1.781 1.844-2.831c0.394-1.019 0.669-2.181 0.744-3.881 0.075-1.706 0.094-2.25 0.094-6.594s-0.019-4.887-0.094-6.594c-0.075-1.7-0.35-2.869-0.744-3.881-0.394-1.063-0.938-1.956-1.831-2.844-0.887-0.887-1.781-1.438-2.831-1.844-1.019-0.394-2.181-0.669-3.881-0.744-1.712-0.081-2.256-0.1-6.6-0.1v0z"></path>
+              <path d="M16 7.781c-4.537 0-8.219 3.681-8.219 8.219s3.681 8.219 8.219 8.219 8.219-3.681 8.219-8.219c0-4.537-3.681-8.219-8.219-8.219zM16 21.331c-2.944 0-5.331-2.387-5.331-5.331s2.387-5.331 5.331-5.331c2.944 0 5.331 2.387 5.331 5.331s-2.387 5.331-5.331 5.331z"></path>
+              <path d="M26.462 7.456c0 1.060-0.859 1.919-1.919 1.919s-1.919-0.859-1.919-1.919c0-1.060 0.859-1.919 1.919-1.919s1.919 0.859 1.919 1.919z"></path>
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?time_continue=0&v=fKmZ7e1Ptvw" target="_blank">
+            <svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+              <title>Youtube</title>
+              <path d="M31.681 9.6c0 0-0.313-2.206-1.275-3.175-1.219-1.275-2.581-1.281-3.206-1.356-4.475-0.325-11.194-0.325-11.194-0.325h-0.012c0 0-6.719 0-11.194 0.325-0.625 0.075-1.987 0.081-3.206 1.356-0.963 0.969-1.269 3.175-1.269 3.175s-0.319 2.588-0.319 5.181v2.425c0 2.587 0.319 5.181 0.319 5.181s0.313 2.206 1.269 3.175c1.219 1.275 2.819 1.231 3.531 1.369 2.563 0.244 10.881 0.319 10.881 0.319s6.725-0.012 11.2-0.331c0.625-0.075 1.988-0.081 3.206-1.356 0.962-0.969 1.275-3.175 1.275-3.175s0.319-2.587 0.319-5.181v-2.425c-0.006-2.588-0.325-5.181-0.325-5.181zM12.694 20.15v-8.994l8.644 4.513-8.644 4.481z"></path>
+            </svg>
+
+          </a>
+        </li>
+        <li>
+          <a href="https://www.fiap.com.br/graduacao/bacharelado/sistemas-de-informacao/" target="_blank">
+            <svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+              <title>FIAP</title>
+              <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM16 30c-1.967 0-3.84-0.407-5.538-1.139l7.286-8.197c0.163-0.183 0.253-0.419 0.253-0.664v-3c0-0.552-0.448-1-1-1-3.531 0-7.256-3.671-7.293-3.707-0.188-0.188-0.442-0.293-0.707-0.293h-4c-0.552 0-1 0.448-1 1v6c0 0.379 0.214 0.725 0.553 0.894l3.447 1.724v5.871c-3.627-2.53-6-6.732-6-11.489 0-2.147 0.484-4.181 1.348-6h3.652c0.265 0 0.52-0.105 0.707-0.293l4-4c0.188-0.188 0.293-0.442 0.293-0.707v-2.419c1.268-0.377 2.61-0.581 4-0.581 2.2 0 4.281 0.508 6.134 1.412-0.13 0.109-0.256 0.224-0.376 0.345-1.133 1.133-1.757 2.64-1.757 4.243s0.624 3.109 1.757 4.243c1.139 1.139 2.663 1.758 4.239 1.758 0.099 0 0.198-0.002 0.297-0.007 0.432 1.619 1.211 5.833-0.263 11.635-0.014 0.055-0.022 0.109-0.026 0.163-2.541 2.596-6.084 4.208-10.004 4.208z"></path>
+            </svg>
+
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </footer>
+
+  <script src="animacao.js"></script>
+  <script src="teclado.js"></script>
+  <script src="colisor.js"></script>
+  <script src="fundo.js"></script>
+  <script src="nave.js"></script>
+  <script src="ovni.js"></script>
+  <script src="tiro.js"></script>
+  <script src="spritesheet.js"></script>
+  <script src="explosao.js"></script>
+  <script src="painel.js"></script>
+  <script src="js/menu.js"></script>
+</body>
+
+</html>
